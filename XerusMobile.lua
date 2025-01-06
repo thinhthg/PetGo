@@ -19,7 +19,7 @@ MainFrame.Active = true
 MainFrame.Draggable = true -- Cho phép kéo thả menu
 
 TitleLabel.Parent = MainFrame
-TitleLabel.Text = "BF Trade Scam"
+TitleLabel.Text = "Pet Go"
 TitleLabel.Size = UDim2.new(1, 0, 0, 30)
 TitleLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -27,7 +27,7 @@ TitleLabel.Font = Enum.Font.SourceSans
 TitleLabel.TextSize = 18
 
 ToggleEggsRollButton.Parent = MainFrame
-ToggleEggsRollButton.Text = "Eggs Roll: OFF"
+ToggleEggsRollButton.Text = "Auto Roll: OFF"
 ToggleEggsRollButton.Size = UDim2.new(1, -20, 0, 30)
 ToggleEggsRollButton.Position = UDim2.new(0, 10, 0, 40)
 ToggleEggsRollButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
@@ -36,7 +36,7 @@ ToggleEggsRollButton.Font = Enum.Font.SourceSans
 ToggleEggsRollButton.TextSize = 16
 
 ToggleAttack8Button.Parent = MainFrame
-ToggleAttack8Button.Text = "Attack 8: OFF"
+ToggleAttack8Button.Text = "Đào Kim Cương: OFF"
 ToggleAttack8Button.Size = UDim2.new(1, -20, 0, 30)
 ToggleAttack8Button.Position = UDim2.new(0, 10, 0, 75)
 ToggleAttack8Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
@@ -45,7 +45,7 @@ ToggleAttack8Button.Font = Enum.Font.SourceSans
 ToggleAttack8Button.TextSize = 16
 
 ToggleAttack2Button.Parent = MainFrame
-ToggleAttack2Button.Text = "Attack 2: OFF"
+ToggleAttack2Button.Text = "Đào Đá: OFF"
 ToggleAttack2Button.Size = UDim2.new(1, -20, 0, 30)
 ToggleAttack2Button.Position = UDim2.new(0, 10, 0, 110)
 ToggleAttack2Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
@@ -54,7 +54,7 @@ ToggleAttack2Button.Font = Enum.Font.SourceSans
 ToggleAttack2Button.TextSize = 16
 
 ToggleAttack1Button.Parent = MainFrame
-ToggleAttack1Button.Text = "Attack 1: OFF"
+ToggleAttack1Button.Text = "Đào Vàng: OFF"
 ToggleAttack1Button.Size = UDim2.new(1, -20, 0, 30)
 ToggleAttack1Button.Position = UDim2.new(0, 10, 0, 145)
 ToggleAttack1Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
