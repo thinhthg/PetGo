@@ -2,10 +2,10 @@
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local TitleLabel = Instance.new("TextLabel")
-local ToggleEggsRollButton = Instance.new("TextButton")
-local ToggleAttack8Button = Instance.new("TextButton")
-local ToggleAttack2Button = Instance.new("TextButton")
-local ToggleAttack1Button = Instance.new("TextButton")
+local ToggleAutoRoll0Button = Instance.new("TextButton")
+local ToggleĐào Kim CươngButton = Instance.new("TextButton")
+local ToggleĐào ĐáButton = Instance.new("TextButton")
+local ToggleĐào VàngButton = Instance.new("TextButton")
 local ToggleButton = Instance.new("TextButton")
 
 -- Thuộc tính GUI
@@ -19,7 +19,7 @@ MainFrame.Active = true
 MainFrame.Draggable = true -- Cho phép kéo thả menu
 
 TitleLabel.Parent = MainFrame
-TitleLabel.Text = "Pet Go"
+TitleLabel.Text = "Pet Go Hub"
 TitleLabel.Size = UDim2.new(1, 0, 0, 30)
 TitleLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -27,7 +27,7 @@ TitleLabel.Font = Enum.Font.SourceSans
 TitleLabel.TextSize = 18
 
 ToggleEggsRollButton.Parent = MainFrame
-ToggleEggsRollButton.Text = "Auto Roll: OFF"
+ToggleEggsRollButton.Text = "Auto Roll 0: OFF"
 ToggleEggsRollButton.Size = UDim2.new(1, -20, 0, 30)
 ToggleEggsRollButton.Position = UDim2.new(0, 10, 0, 40)
 ToggleEggsRollButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
@@ -36,7 +36,7 @@ ToggleEggsRollButton.Font = Enum.Font.SourceSans
 ToggleEggsRollButton.TextSize = 16
 
 ToggleAttack8Button.Parent = MainFrame
-ToggleAttack8Button.Text = "Đào Kim Cương: OFF"
+ToggleAttack8Button.Text = "Đào Kim Cương 1: OFF"
 ToggleAttack8Button.Size = UDim2.new(1, -20, 0, 30)
 ToggleAttack8Button.Position = UDim2.new(0, 10, 0, 75)
 ToggleAttack8Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
@@ -45,7 +45,7 @@ ToggleAttack8Button.Font = Enum.Font.SourceSans
 ToggleAttack8Button.TextSize = 16
 
 ToggleAttack2Button.Parent = MainFrame
-ToggleAttack2Button.Text = "Đào Đá: OFF"
+ToggleAttack2Button.Text = "Đào Đá 2: OFF"
 ToggleAttack2Button.Size = UDim2.new(1, -20, 0, 30)
 ToggleAttack2Button.Position = UDim2.new(0, 10, 0, 110)
 ToggleAttack2Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
@@ -54,7 +54,7 @@ ToggleAttack2Button.Font = Enum.Font.SourceSans
 ToggleAttack2Button.TextSize = 16
 
 ToggleAttack1Button.Parent = MainFrame
-ToggleAttack1Button.Text = "Đào Vàng: OFF"
+ToggleAttack1Button.Text = "Đào Vàng 3: OFF"
 ToggleAttack1Button.Size = UDim2.new(1, -20, 0, 30)
 ToggleAttack1Button.Position = UDim2.new(0, 10, 0, 145)
 ToggleAttack1Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
@@ -139,22 +139,22 @@ end
 -- Sự kiện cho các nút
 ToggleEggsRollButton.MouseButton1Click:Connect(function()
     eggsRollActive = not eggsRollActive
-    ToggleEggsRollButton.Text = eggsRollActive and "Eggs Roll: ON" or "Eggs Roll: OFF"
+    ToggleEggsRollButton.Text = eggsRollActive and "Auto Roll 0: ON" or "Eggs Roll: OFF"
 end)
 
 ToggleAttack8Button.MouseButton1Click:Connect(function()
     attack8Active = not attack8Active
-    ToggleAttack8Button.Text = attack8Active and "Attack 8: ON" or "Attack 8: OFF"
+    ToggleAttack8Button.Text = attack8Active and "Đào Kim Cương 1: ON" or "Attack 8: OFF"
 end)
 
 ToggleAttack2Button.MouseButton1Click:Connect(function()
     attack2Active = not attack2Active
-    ToggleAttack2Button.Text = attack2Active and "Attack 2: ON" or "Attack 2: OFF"
+    ToggleAttack2Button.Text = attack2Active and "Đào Đá 2: ON" or "Attack 2: OFF"
 end)
 
 ToggleAttack1Button.MouseButton1Click:Connect(function()
     attack1Active = not attack1Active
-    ToggleAttack1Button.Text = attack1Active and "Attack 1: ON" or "Attack 1: OFF"
+    ToggleAttack1Button.Text = attack1Active and "Đào Vàng 3: ON" or "Attack 1: OFF"
 end)
 
 -- Bắt đầu vòng lặp
