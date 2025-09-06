@@ -1,9 +1,16 @@
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local function getSlapEvent()
+    if LocalPlayer.Character then
+        return LocalPlayer.Character:WaitForChild("SlapHand"):WaitForChild("Event")
+    end
+end
 
 local gui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 220, 0, 600)
+frame.Size = UDim2.new(0,220,0,600)
 frame.Position = UDim2.new(0.3,0,0.3,0)
 frame.BackgroundColor3 = Color3.fromRGB(40,40,40)
 frame.Active = true
@@ -55,6 +62,14 @@ indivLayout.SortOrder = Enum.SortOrder.LayoutOrder
 indivLayout.Padding = UDim.new(0,5)
 
 local selectedTarget = nil
+local slashing = false
+
+local function doSlash(target)
+    local event = getSlapEvent()
+    if event then
+        event:FireServer({"slash", target.Character, Vector3.new(0,0,0)})
+    end
+end
 
 local function updateIndividualList()
     indivList:ClearAllChildren()
@@ -68,7 +83,7 @@ local function updateIndividualList()
         targetLabel.Text = "Chưa chọn ai"
     end)
     for _,p in ipairs(Players:GetPlayers()) do
-        if p ~= LocalPlayer and (searchBox.Text == "" or string.find(p.Name:lower(),searchBox.Text:lower())) then
+        if p ~= LocalPlayer and (searchBox.Text=="" or string.find(p.Name:lower(),searchBox.Text:lower())) then
             local btn = Instance.new("TextButton", indivList)
             btn.Size = UDim2.new(1,-10,0,30)
             btn.Text = p.Name
@@ -93,20 +108,13 @@ slashBtn.Text = "OFF Slash"
 slashBtn.BackgroundColor3 = Color3.fromRGB(80,80,80)
 slashBtn.TextColor3 = Color3.fromRGB(255,255,255)
 
-local slashing = false
-local function doSlash(target)
-    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("SlapHand") then
-        local args = {"slash", target.Character, Vector3.new(0,0,0)}
-        LocalPlayer.Character.SlapHand.Event:FireServer(unpack(args))
-    end
-end
 slashBtn.MouseButton1Click:Connect(function()
     if not selectedTarget then targetLabel.Text="Chưa chọn ai!" return end
     slashing = not slashing
     slashBtn.Text = slashing and "ON Slash" or "OFF Slash"
     if slashing then
         task.spawn(function()
-            while slashing and selectedTarget do
+            while slashing and selectedTarget and LocalPlayer.Character do
                 doSlash(selectedTarget)
                 task.wait(0.1)
             end
@@ -131,6 +139,7 @@ allLayout.SortOrder = Enum.SortOrder.LayoutOrder
 allLayout.Padding = UDim.new(0,5)
 
 local excludedFromAll = {}
+local slashingAll = false
 
 local function updateAllList()
     allList:ClearAllChildren()
@@ -174,13 +183,12 @@ slashAllBtn.Text = "OFF Slash All"
 slashAllBtn.BackgroundColor3 = Color3.fromRGB(80,80,80)
 slashAllBtn.TextColor3 = Color3.fromRGB(255,255,255)
 
-local slashingAll = false
 slashAllBtn.MouseButton1Click:Connect(function()
     slashingAll = not slashingAll
     slashAllBtn.Text = slashingAll and "ON Slash All" or "OFF Slash All"
     if slashingAll then
         task.spawn(function()
-            while slashingAll do
+            while slashingAll and LocalPlayer.Character do
                 for _,p in ipairs(Players:GetPlayers()) do
                     if p~=LocalPlayer and not excludedFromAll[p] then
                         doSlash(p)
@@ -190,4 +198,11 @@ slashAllBtn.MouseButton1Click:Connect(function()
             end
         end)
     end
+end)
+
+LocalPlayer.CharacterAdded:Connect(function()
+    slashing = false
+    slashingAll = false
+    slashBtn.Text = "OFF Slash"
+    slashAllBtn.Text = "OFF Slash All"
 end)
