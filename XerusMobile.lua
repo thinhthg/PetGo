@@ -38,7 +38,6 @@ targetLabel.Text = "Chưa chọn ai"
 targetLabel.BackgroundTransparency = 1
 targetLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 
--- DANH SÁCH CÁ NHÂN
 local indivHeader = Instance.new("TextButton", f)
 indivHeader.Size = UDim2.new(1, -10, 0, 30)
 indivHeader.Position = UDim2.new(0, 5, 0, 70)
@@ -69,31 +68,37 @@ local indivLayout = Instance.new("UIListLayout", indivList)
 indivLayout.SortOrder = Enum.SortOrder.LayoutOrder
 indivLayout.Padding = UDim.new(0, 5)
 
--- DANH SÁCH ALL
+local toggleBtn = Instance.new("TextButton", f)
+toggleBtn.Size = UDim2.new(1, -10, 0, 40)
+toggleBtn.Position = UDim2.new(0, 5, 0, 335)
+toggleBtn.Text = "OFF Slash"
+toggleBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
 local allHeader = Instance.new("TextButton", f)
 allHeader.Size = UDim2.new(1, -10, 0, 30)
-allHeader.Position = UDim2.new(0, 5, 0, 340)
+allHeader.Position = UDim2.new(0, 5, 0, 385)
 allHeader.Text = "- All Player"
 allHeader.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 allHeader.TextColor3 = Color3.fromRGB(255, 255, 255)
 
 local searchAll = Instance.new("TextBox", f)
 searchAll.Size = UDim2.new(1, -10, 0, 30)
-searchAll.Position = UDim2.new(0, 5, 0, 375)
+searchAll.Position = UDim2.new(0, 5, 0, 420)
 searchAll.PlaceholderText = "Tìm player All..."
 searchAll.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 searchAll.TextColor3 = Color3.fromRGB(255, 255, 255)
 
 local resetAll = Instance.new("TextButton", f)
 resetAll.Size = UDim2.new(1, -10, 0, 30)
-resetAll.Position = UDim2.new(0, 5, 0, 410)
+resetAll.Position = UDim2.new(0, 5, 0, 455)
 resetAll.Text = "Reset All"
 resetAll.BackgroundColor3 = Color3.fromRGB(100, 60, 60)
 resetAll.TextColor3 = Color3.fromRGB(255, 255, 255)
 
 local allList = Instance.new("ScrollingFrame", f)
 allList.Size = UDim2.new(1, -10, 0, 150)
-allList.Position = UDim2.new(0, 5, 0, 445)
+allList.Position = UDim2.new(0, 5, 0, 490)
 allList.ScrollBarThickness = 6
 allList.ClipsDescendants = true
 local allLayout = Instance.new("UIListLayout", allList)
@@ -103,12 +108,11 @@ allLayout.Padding = UDim.new(0, 5)
 local selectedTarget = nil
 local selectedAll = {}
 local slashing = false
-local allSlashing = false
 
 local function doSlash(target)
     if L.Character and L.Character:FindFirstChild("SlapHand") and target.Character then
         pcall(function()
-            L.Character.SlapHand.Event:FireServer({"slash", target.Character, Vector3.new(-3.960314,0,0.562060)})
+            L.Character.SlapHand.Event:FireServer({"slash", target.Character, Vector3.new(-3.96,0,0.56)})
         end)
     end
 end
@@ -181,4 +185,23 @@ P.PlayerRemoving:Connect(function()
 end)
 
 updateIndividualList()
-updateAll
+updateAllList()
+
+toggleBtn.MouseButton1Click:Connect(function()
+    slashing = not slashing
+    toggleBtn.Text = slashing and "ON Slash" or "OFF Slash"
+    if slashing then
+        task.spawn(function()
+            while slashing do
+                if selectedTarget then doSlash(selectedTarget) end
+                for p,_ in pairs(selectedAll) do doSlash(p) end
+                task.wait(0.1)
+            end
+        end)
+    end
+end)
+
+L.CharacterAdded:Connect(function()
+    slashing = false
+    toggleBtn.Text = "OFF Slash"
+end)
