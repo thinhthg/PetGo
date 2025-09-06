@@ -26,7 +26,6 @@ local searchBox = Instance.new("TextBox", frame)
 searchBox.Size = UDim2.new(1, -10, 0, 30)
 searchBox.Position = UDim2.new(0, 5, 0, 70)
 searchBox.PlaceholderText = "Tìm player..."
-searchBox.Text = ""
 searchBox.BackgroundColor3 = Color3.fromRGB(60,60,60)
 searchBox.TextColor3 = Color3.fromRGB(255,255,255)
 
@@ -55,21 +54,87 @@ toggleButton.Text = "OFF Slash"
 toggleButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 toggleButton.TextColor3 = Color3.fromRGB(255,255,255)
 
+local circleBtn = Instance.new("TextButton", gui)
+circleBtn.Size = UDim2.new(0, 50, 0, 50)
+circleBtn.Position = UDim2.new(0, 10, 0.5, -25)
+circleBtn.Text = ">"
+circleBtn.BackgroundColor3 = Color3.fromRGB(100,100,100)
+circleBtn.Visible = false
+circleBtn.Active = true
+circleBtn.Draggable = true
+
 local selectedTarget = nil
 local slashing = false
 
 local function doSlash(target)
     if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("SlapHand") then
-        local args = {
-            "slash",
-            target.Character,
-            Vector3.new(0,0,0)
-        }
+        local args = {"slash", target.Character, Vector3.new(0,0,0)}
         LocalPlayer.Character.SlapHand.Event:FireServer(unpack(args))
     end
 end
 
 local function updatePlayers()
+    list:ClearAllChildren()
+
+    local noneBtn = Instance.new("TextButton", list)
+    noneBtn.Size = UDim2.new(1, -10, 0, 30)
+    noneBtn.Text = "None"
+    noneBtn.BackgroundColor3 = Color3.fromRGB(100,50,50)
+    noneBtn.TextColor3 = Color3.fromRGB(255,255,255)
+    noneBtn.MouseButton1Click:Connect(function()
+        selectedTarget = nil
+        targetLabel.Text = "Chưa chọn ai"
+    end)
+
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer then
+            if searchBox.Text == "" or string.find(p.Name:lower(), searchBox.Text:lower()) then
+                local btn = Instance.new("TextButton", list)
+                btn.Size = UDim2.new(1, -10, 0, 30)
+                btn.Text = p.Name
+                btn.BackgroundColor3 = Color3.fromRGB(70,70,70)
+                btn.TextColor3 = Color3.fromRGB(255,255,255)
+                btn.MouseButton1Click:Connect(function()
+                    selectedTarget = p
+                    targetLabel.Text = "Đã chọn: " .. p.Name
+                end)
+            end
+        end
+    end
+end
+
+searchBox:GetPropertyChangedSignal("Text"):Connect(updatePlayers)
+resetButton.MouseButton1Click:Connect(updatePlayers)
+Players.PlayerAdded:Connect(updatePlayers)
+Players.PlayerRemoving:Connect(updatePlayers)
+updatePlayers()
+
+toggleButton.MouseButton1Click:Connect(function()
+    if not selectedTarget then
+        targetLabel.Text = "Chưa chọn ai!"
+        return
+    end
+    slashing = not slashing
+    toggleButton.Text = slashing and "ON Slash" or "OFF Slash"
+    if slashing then
+        task.spawn(function()
+            while slashing and selectedTarget do
+                doSlash(selectedTarget)
+                task.wait(0.1)
+            end
+        end)
+    end
+end)
+
+minimizeButton.MouseButton1Click:Connect(function()
+    frame.Visible = false
+    circleBtn.Visible = true
+end)
+
+circleBtn.MouseButton1Click:Connect(function()
+    frame.Visible = true
+    circleBtn.Visible = false
+end)local function updatePlayers()
     list:ClearAllChildren()
 
     local noneBtn = Instance.new("TextButton", list)
