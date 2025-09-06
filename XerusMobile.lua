@@ -73,6 +73,16 @@ local function doSlash(target)
     end
 end
 
+local function stopSlashing()
+    slashing = false
+    toggleButton.Text = "OFF Slash"
+end
+
+LocalPlayer.Character:WaitForChild("Humanoid").Died:Connect(stopSlashing)
+LocalPlayer.CharacterAdded:Connect(function(char)
+    char:WaitForChild("Humanoid").Died:Connect(stopSlashing)
+end)
+
 local function updatePlayers()
     list:ClearAllChildren()
 
@@ -89,11 +99,12 @@ local function updatePlayers()
     for _, p in ipairs(Players:GetPlayers()) do
         if p ~= LocalPlayer then
             if searchBox.Text == "" or string.find(p.Name:lower(), searchBox.Text:lower()) then
-                local btn = Instance.new("TextButton", list)
+                local btn = Instance.new("TextButton")
                 btn.Size = UDim2.new(1, -10, 0, 30)
                 btn.Text = p.Name
                 btn.BackgroundColor3 = Color3.fromRGB(70,70,70)
                 btn.TextColor3 = Color3.fromRGB(255,255,255)
+                btn.Parent = list
                 btn.MouseButton1Click:Connect(function()
                     selectedTarget = p
                     targetLabel.Text = "Đã chọn: " .. p.Name
