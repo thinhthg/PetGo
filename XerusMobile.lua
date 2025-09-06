@@ -4,7 +4,7 @@ local LocalPlayer = Players.LocalPlayer
 local gui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 220, 0, 450)
+frame.Size = UDim2.new(0, 220, 0, 500)
 frame.Position = UDim2.new(0.3, 0, 0.3, 0)
 frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 frame.Active = true
@@ -37,7 +37,7 @@ resetButton.BackgroundColor3 = Color3.fromRGB(100, 60, 60)
 resetButton.TextColor3 = Color3.fromRGB(255,255,255)
 
 local list = Instance.new("ScrollingFrame", frame)
-list.Size = UDim2.new(1, -10, 0, 180)
+list.Size = UDim2.new(1, -10, 0, 220)
 list.Position = UDim2.new(0, 5, 0, 150)
 list.ScrollBarThickness = 6
 list.AutomaticCanvasSize = Enum.AutomaticSize.Y
@@ -73,6 +73,7 @@ circleBtn.Draggable = true
 local selectedTarget = nil
 local slashing = false
 local slashingAll = false
+local excludedPlayers = {}
 
 local function doSlash(target)
     if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("SlapHand") then
@@ -116,9 +117,23 @@ local function updatePlayers()
                 btn.BackgroundColor3 = Color3.fromRGB(70,70,70)
                 btn.TextColor3 = Color3.fromRGB(255,255,255)
                 btn.Parent = list
+
+                local excluded = excludedPlayers[p] or false
+
                 btn.MouseButton1Click:Connect(function()
                     selectedTarget = p
-                    targetLabel.Text = "Đã chọn: " .. p.Name
+                    targetLabel.Text = "Đã chọn: "..p.Name
+                end)
+
+                btn.MouseButton2Click:Connect(function()
+                    excluded = not excluded
+                    if excluded then
+                        excludedPlayers[p] = true
+                        btn.BackgroundColor3 = Color3.fromRGB(150,50,50)
+                    else
+                        excludedPlayers[p] = nil
+                        btn.BackgroundColor3 = Color3.fromRGB(70,70,70)
+                    end
                 end)
             end
         end
@@ -128,6 +143,7 @@ end
 searchBox:GetPropertyChangedSignal("Text"):Connect(updatePlayers)
 resetButton.MouseButton1Click:Connect(function()
     stopSlashing()
+    excludedPlayers = {}
     updatePlayers()
 end)
 Players.PlayerAdded:Connect(updatePlayers)
@@ -158,7 +174,7 @@ toggleAllButton.MouseButton1Click:Connect(function()
         task.spawn(function()
             while slashingAll do
                 for _, p in ipairs(Players:GetPlayers()) do
-                    if p ~= LocalPlayer and p.Character then
+                    if p ~= LocalPlayer and p.Character and not excludedPlayers[p] then
                         doSlash(p)
                     end
                 end
