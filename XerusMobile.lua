@@ -1,6 +1,7 @@
 local P=game:GetService("Players")
 local L=P.LocalPlayer
 local gui=Instance.new("ScreenGui",L:WaitForChild("PlayerGui"))
+
 local f=Instance.new("Frame",gui)
 f.Size=UDim2.new(0,220,0,700)
 f.Position=UDim2.new(0.3,0,0.2,0)
@@ -31,7 +32,6 @@ targetLabel.Text="Chưa chọn ai"
 targetLabel.BackgroundTransparency=1
 targetLabel.TextColor3=Color3.fromRGB(255,255,255)
 
--- Cá nhân
 local indivHeader=Instance.new("TextButton",f)
 indivHeader.Size=UDim2.new(1,-10,0,30)
 indivHeader.Position=UDim2.new(0,5,0,70)
@@ -62,12 +62,46 @@ local indivLayout=Instance.new("UIListLayout",indivList)
 indivLayout.SortOrder=Enum.SortOrder.LayoutOrder
 indivLayout.Padding=UDim.new(0,5)
 
+local allHeader=Instance.new("TextButton",f)
+allHeader.Size=UDim2.new(1,-10,0,30)
+allHeader.Position=UDim2.new(0,5,0,340)
+allHeader.Text="- All Player"
+allHeader.BackgroundColor3=Color3.fromRGB(80,80,80)
+allHeader.TextColor3=Color3.fromRGB(255,255,255)
+
+local searchAll=Instance.new("TextBox",f)
+searchAll.Size=UDim2.new(1,-10,0,30)
+searchAll.Position=UDim2.new(0,5,0,375)
+searchAll.PlaceholderText="Tìm player All..."
+searchAll.BackgroundColor3=Color3.fromRGB(60,60,60)
+searchAll.TextColor3=Color3.fromRGB(255,255,255)
+
+local resetAll=Instance.new("TextButton",f)
+resetAll.Size=UDim2.new(1,-10,0,30)
+resetAll.Position=UDim2.new(0,5,0,410)
+resetAll.Text="Reset All"
+resetAll.BackgroundColor3=Color3.fromRGB(100,60,60)
+resetAll.TextColor3=Color3.fromRGB(255,255,255)
+
+local allList=Instance.new("ScrollingFrame",f)
+allList.Size=UDim2.new(1,-10,0,150)
+allList.Position=UDim2.new(0,5,0,445)
+allList.ScrollBarThickness=6
+allList.ClipsDescendants=true
+local allLayout=Instance.new("UIListLayout",allList)
+allLayout.SortOrder=Enum.SortOrder.LayoutOrder
+allLayout.Padding=UDim.new(0,5)
+
 local selectedTarget=nil
+local selectedAll={}
 local slashing=false
+local allSlashing=false
 
 local function doSlash(target)
-    if L.Character and L.Character:FindFirstChild("SlapHand") then
-        L.Character.SlapHand.Event:FireServer({"slash",target.Character,Vector3.new(0,0,0)})
+    if L.Character and L.Character:FindFirstChild("SlapHand") and target.Character then
+        pcall(function()
+            L.Character.SlapHand.Event:FireServer({"slash",target.Character,Vector3.new(-3.960314,0,0.562060)})
+        end)
     end
 end
 
@@ -78,10 +112,7 @@ local function updateIndividualList()
     noneBtn.Text="None"
     noneBtn.BackgroundColor3=Color3.fromRGB(100,50,50)
     noneBtn.TextColor3=Color3.fromRGB(255,255,255)
-    noneBtn.MouseButton1Click:Connect(function()
-        selectedTarget=nil
-        targetLabel.Text="Chưa chọn ai"
-    end)
+    noneBtn.MouseButton1Click:Connect(function() selectedTarget=nil targetLabel.Text="Chưa chọn ai" end)
     for _,p in ipairs(P:GetPlayers()) do
         if p~=L and (searchBox.Text=="" or string.find(p.Name:lower(),searchBox.Text:lower())) then
             local btn=Instance.new("TextButton",indivList)
@@ -96,11 +127,43 @@ local function updateIndividualList()
         end
     end
 end
+
+local function updateAllList()
+    allList:ClearAllChildren()
+    for _,p in ipairs(P:GetPlayers()) do
+        if p~=L then
+            if searchAll.Text=="" or string.find(p.Name:lower(),searchAll.Text:lower()) then
+                local btn=Instance.new("TextButton",allList)
+                btn.Size=UDim2.new(1,-10,0,30)
+                btn.Text=p.Name
+                btn.BackgroundColor3=Color3.fromRGB(70,70,70)
+                btn.TextColor3=Color3.fromRGB(255,255,255)
+                btn.AutoButtonColor=true
+                btn.MouseButton1Click:Connect(function()
+                    if selectedAll[p] then
+                        selectedAll[p]=nil
+                        btn.BackgroundColor3=Color3.fromRGB(70,70,70)
+                    else
+                        selectedAll[p]=true
+                        btn.BackgroundColor3=Color3.fromRGB(100,100,100)
+                    end
+                end)
+            end
+        end
+    end
+end
+
 searchBox:GetPropertyChangedSignal("Text"):Connect(updateIndividualList)
 resetBtn.MouseButton1Click:Connect(updateIndividualList)
-P.PlayerAdded:Connect(updateIndividualList)
-P.PlayerRemoving:Connect(updateIndividualList)
+searchAll:GetPropertyChangedSignal("Text"):Connect(updateAllList)
+resetAll.MouseButton1Click:Connect(function()
+    selectedAll={}
+    updateAllList()
+end)
+P.PlayerAdded:Connect(function() updateIndividualList() updateAllList() end)
+P.PlayerRemoving:Connect(function() updateIndividualList() updateAllList() end)
 updateIndividualList()
+updateAllList()
 
 local slashBtn=Instance.new("TextButton",f)
 slashBtn.Size=UDim2.new(1,-10,0,40)
@@ -122,94 +185,20 @@ slashBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local indivCollapsed=false
-indivHeader.MouseButton1Click:Connect(function()
-    indivCollapsed=not indivCollapsed
-    searchBox.Visible=not indivCollapsed
-    resetBtn.Visible=not indivCollapsed
-    indivList.Visible=not indivCollapsed
-    indivHeader.Text=(indivCollapsed and "+" or "-").." Cá nhân"
-end)
-
--- All loại trừ
-local allHeader=Instance.new("TextButton",f)
-allHeader.Size=UDim2.new(1,-10,0,30)
-allHeader.Position=UDim2.new(0,5,0,330)
-allHeader.Text="- All Player"
-allHeader.BackgroundColor3=Color3.fromRGB(80,80,80)
-allHeader.TextColor3=Color3.fromRGB(255,255,255)
-
-local allSearchBox=Instance.new("TextBox",f)
-allSearchBox.Size=UDim2.new(1,-10,0,30)
-allSearchBox.Position=UDim2.new(0,5,0,365)
-allSearchBox.PlaceholderText="Tìm player loại trừ..."
-allSearchBox.BackgroundColor3=Color3.fromRGB(60,60,60)
-allSearchBox.TextColor3=Color3.fromRGB(255,255,255)
-
-local allResetBtn=Instance.new("TextButton",f)
-allResetBtn.Size=UDim2.new(1,-10,0,30)
-allResetBtn.Position=UDim2.new(0,5,0,400)
-allResetBtn.Text="Reset All"
-allResetBtn.BackgroundColor3=Color3.fromRGB(100,60,60)
-allResetBtn.TextColor3=Color3.fromRGB(255,255,255)
-
-local allList=Instance.new("ScrollingFrame",f)
-allList.Size=UDim2.new(1,-10,0,150)
-allList.Position=UDim2.new(0,5,0,435)
-allList.ScrollBarThickness=6
-allList.ClipsDescendants=true
-local allLayout=Instance.new("UIListLayout",allList)
-allLayout.SortOrder=Enum.SortOrder.LayoutOrder
-allLayout.Padding=UDim.new(0,5)
-
-local excluded={}
-local slashingAll=false
-
-local function updateAllList()
-    allList:ClearAllChildren()
-    local noneBtn=Instance.new("TextButton",allList)
-    noneBtn.Size=UDim2.new(1,-10,0,30)
-    noneBtn.Text="None"
-    noneBtn.BackgroundColor3=Color3.fromRGB(100,50,50)
-    noneBtn.TextColor3=Color3.fromRGB(255,255,255)
-    noneBtn.MouseButton1Click:Connect(function()
-        excluded={}
-        updateAllList()
-    end)
-    for _,p in ipairs(P:GetPlayers()) do
-        if p~=L and (allSearchBox.Text=="" or string.find(p.Name:lower(),allSearchBox.Text:lower())) then
-            local btn=Instance.new("TextButton",allList)
-            btn.Size=UDim2.new(1,-10,0,30)
-            btn.Text=p.Name
-            btn.BackgroundColor3=excluded[p] and Color3.fromRGB(100,50,50) or Color3.fromRGB(70,70,70)
-            btn.TextColor3=Color3.fromRGB(255,255,255)
-            btn.MouseButton1Click:Connect(function()
-                if excluded[p] then excluded[p]=nil else excluded[p]=true end
-                updateAllList()
-            end)
-        end
-    end
-end
-allSearchBox:GetPropertyChangedSignal("Text"):Connect(updateAllList)
-allResetBtn.MouseButton1Click:Connect(updateAllList)
-P.PlayerAdded:Connect(updateAllList)
-P.PlayerRemoving:Connect(updateAllList)
-updateAllList()
-
-local slashAllBtn=Instance.new("TextButton",f)
-slashAllBtn.Size=UDim2.new(1,-10,0,40)
-slashAllBtn.Position=UDim2.new(0,5,0,600)
-slashAllBtn.Text="OFF Slash All"
-slashAllBtn.BackgroundColor3=Color3.fromRGB(80,80,80)
-slashAllBtn.TextColor3=Color3.fromRGB(255,255,255)
-slashAllBtn.MouseButton1Click:Connect(function()
-    slashingAll=not slashingAll
-    slashAllBtn.Text=slashingAll and "ON Slash All" or "OFF Slash All"
-    if slashingAll then
+local allSlashBtn=Instance.new("TextButton",f)
+allSlashBtn.Size=UDim2.new(1,-10,0,40)
+allSlashBtn.Position=UDim2.new(0,5,1,-90)
+allSlashBtn.Text="OFF Slash All"
+allSlashBtn.BackgroundColor3=Color3.fromRGB(80,80,80)
+allSlashBtn.TextColor3=Color3.fromRGB(255,255,255)
+allSlashBtn.MouseButton1Click:Connect(function()
+    allSlashing=not allSlashing
+    allSlashBtn.Text=allSlashing and "ON Slash All" or "OFF Slash All"
+    if allSlashing then
         task.spawn(function()
-            while slashingAll and L.Character do
-                for _,p in ipairs(P:GetPlayers()) do
-                    if p~=L and not excluded[p] then
+            while allSlashing and L.Character do
+                for p,_ in pairs(selectedAll) do
+                    if p and p.Character then
                         doSlash(p)
                     end
                 end
@@ -219,18 +208,38 @@ slashAllBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+local indivOriginalSize=f.Size.Y.Offset
+local indivCollapsed=false
+indivHeader.MouseButton1Click:Connect(function()
+    indivCollapsed=not indivCollapsed
+    searchBox.Visible=not indivCollapsed
+    resetBtn.Visible=not indivCollapsed
+    indivList.Visible=not indivCollapsed
+    if indivCollapsed then
+        f.Size=UDim2.new(f.Size.X.Scale,f.Size.X.Offset,0,400)
+    else
+        f.Size=UDim2.new(f.Size.X.Scale,f.Size.X.Offset,0,700)
+    end
+    indivHeader.Text=(indivCollapsed and "+" or "-").." Cá nhân"
+end)
+
 local allCollapsed=false
 allHeader.MouseButton1Click:Connect(function()
     allCollapsed=not allCollapsed
-    allSearchBox.Visible=not allCollapsed
-    allResetBtn.Visible=not allCollapsed
+    searchAll.Visible=not allCollapsed
+    resetAll.Visible=not allCollapsed
     allList.Visible=not allCollapsed
+    if allCollapsed then
+        f.Size=UDim2.new(f.Size.X.Scale,f.Size.X.Offset,0,500)
+    else
+        f.Size=UDim2.new(f.Size.X.Scale,f.Size.X.Offset,0,700)
+    end
     allHeader.Text=(allCollapsed and "+" or "-").." All Player"
 end)
 
 L.Character:WaitForChild("Humanoid").Died:Connect(function()
     slashing=false
-    slashingAll=false
+    allSlashing=false
     slashBtn.Text="OFF Slash"
-    slashAllBtn.Text="OFF Slash All"
+    allSlashBtn.Text="OFF Slash All"
 end)
