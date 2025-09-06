@@ -1,6 +1,9 @@
 local P = game:GetService("Players")
 local L = P.LocalPlayer
-local gui = Instance.new("ScreenGui", L:WaitForChild("PlayerGui"))
+local PlayerGui = L:WaitForChild("PlayerGui")
+local gui = Instance.new("ScreenGui")
+gui.Parent = PlayerGui
+gui.ResetOnSpawn = false
 
 local f = Instance.new("Frame", gui)
 f.Size = UDim2.new(0, 220, 0, 700)
@@ -147,22 +150,20 @@ local function updateAllList()
     allList:ClearAllChildren()
     for _, p in ipairs(P:GetPlayers()) do
         if p ~= L then
-            if searchAll.Text == "" or string.find(p.Name:lower(), searchAll.Text:lower()) then
-                local btn = Instance.new("TextButton", allList)
-                btn.Size = UDim2.new(1, -10, 0, 30)
-                btn.Text = p.Name
-                btn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-                btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-                btn.MouseButton1Click:Connect(function()
-                    if selectedAll[p] then
-                        selectedAll[p] = nil
-                        btn.BackgroundColor3 = Color3.fromRGB(70,70,70)
-                    else
-                        selectedAll[p] = true
-                        btn.BackgroundColor3 = Color3.fromRGB(100,100,100)
-                    end
-                end)
-            end
+            local btn = Instance.new("TextButton", allList)
+            btn.Size = UDim2.new(1, -10, 0, 30)
+            btn.Text = p.Name
+            btn.BackgroundColor3 = selectedAll[p] and Color3.fromRGB(100,100,100) or Color3.fromRGB(70,70,70)
+            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            btn.MouseButton1Click:Connect(function()
+                if selectedAll[p] then
+                    selectedAll[p] = nil
+                    btn.BackgroundColor3 = Color3.fromRGB(70,70,70)
+                else
+                    selectedAll[p] = true
+                    btn.BackgroundColor3 = Color3.fromRGB(100,100,100)
+                end
+            end)
         end
     end
 end
