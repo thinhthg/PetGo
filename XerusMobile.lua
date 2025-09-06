@@ -4,7 +4,7 @@ local LocalPlayer = Players.LocalPlayer
 local gui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 220, 0, 400)
+frame.Size = UDim2.new(0, 220, 0, 450)
 frame.Position = UDim2.new(0.3, 0, 0.3, 0)
 frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 frame.Active = true
@@ -54,6 +54,13 @@ toggleButton.Text = "OFF Slash"
 toggleButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 toggleButton.TextColor3 = Color3.fromRGB(255,255,255)
 
+local toggleAllButton = Instance.new("TextButton", frame)
+toggleAllButton.Size = UDim2.new(1, -10, 0, 40)
+toggleAllButton.Position = UDim2.new(0, 5, 1, -95)
+toggleAllButton.Text = "OFF Slash All"
+toggleAllButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+toggleAllButton.TextColor3 = Color3.fromRGB(255,255,255)
+
 local circleBtn = Instance.new("TextButton", gui)
 circleBtn.Size = UDim2.new(0, 50, 0, 50)
 circleBtn.Position = UDim2.new(0, 10, 0.5, -25)
@@ -65,6 +72,7 @@ circleBtn.Draggable = true
 
 local selectedTarget = nil
 local slashing = false
+local slashingAll = false
 
 local function doSlash(target)
     if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("SlapHand") then
@@ -75,7 +83,9 @@ end
 
 local function stopSlashing()
     slashing = false
+    slashingAll = false
     toggleButton.Text = "OFF Slash"
+    toggleAllButton.Text = "OFF Slash All"
 end
 
 LocalPlayer.Character:WaitForChild("Humanoid").Died:Connect(stopSlashing)
@@ -91,6 +101,7 @@ local function updatePlayers()
     noneBtn.Text = "None"
     noneBtn.BackgroundColor3 = Color3.fromRGB(100,50,50)
     noneBtn.TextColor3 = Color3.fromRGB(255,255,255)
+    noneBtn.Parent = list
     noneBtn.MouseButton1Click:Connect(function()
         selectedTarget = nil
         targetLabel.Text = "Chưa chọn ai"
@@ -115,7 +126,10 @@ local function updatePlayers()
 end
 
 searchBox:GetPropertyChangedSignal("Text"):Connect(updatePlayers)
-resetButton.MouseButton1Click:Connect(updatePlayers)
+resetButton.MouseButton1Click:Connect(function()
+    stopSlashing()
+    updatePlayers()
+end)
 Players.PlayerAdded:Connect(updatePlayers)
 Players.PlayerRemoving:Connect(updatePlayers)
 updatePlayers()
@@ -131,6 +145,23 @@ toggleButton.MouseButton1Click:Connect(function()
         task.spawn(function()
             while slashing and selectedTarget do
                 doSlash(selectedTarget)
+                task.wait(0.1)
+            end
+        end)
+    end
+end)
+
+toggleAllButton.MouseButton1Click:Connect(function()
+    slashingAll = not slashingAll
+    toggleAllButton.Text = slashingAll and "ON Slash All" or "OFF Slash All"
+    if slashingAll then
+        task.spawn(function()
+            while slashingAll do
+                for _, p in ipairs(Players:GetPlayers()) do
+                    if p ~= LocalPlayer and p.Character then
+                        doSlash(p)
+                    end
+                end
                 task.wait(0.1)
             end
         end)
