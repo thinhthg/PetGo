@@ -1,7 +1,13 @@
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
-local gui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
+local gui = Instance.new("ScreenGui")
+gui.Name = "SlashMenu"
+gui.ResetOnSpawn = false
+gui.Parent = PlayerGui
+gui.Enabled = true
+
 local f = Instance.new("Frame", gui)
 f.Size = UDim2.new(0, 220, 0, 600)
 f.Position = UDim2.new(0.3, 0, 0.3, 0)
@@ -154,62 +160,14 @@ local function updatePlayers()
                     targetLabel.Text = "Đã chọn: "..p.Name
                 end)
             end
-            if searchAll.Text == "" or string.find(p.Name:lower(), searchAll.Text:lower()) then
-                local btn = Instance.new("TextButton", allList)
-                btn.Size = UDim2.new(1,-10,0,30)
-                btn.Text = p.Name
-                btn.BackgroundColor3 = Color3.fromRGB(70,70,70)
-                btn.TextColor3 = Color3.fromRGB(255,255,255)
-                local selected = false
-                selectedAll[p] = false
-                btn.MouseButton1Click:Connect(function()
-                    selected = not selected
-                    selectedAll[p] = selected
-                    btn.BackgroundColor3 = selected and Color3.fromRGB(120,70,70) or Color3.fromRGB(70,70,70)
-                end)
-            end
-        end
-    end
-    updateMenuHeight()
-end
-
-searchBox:GetPropertyChangedSignal("Text"):Connect(updatePlayers)
-searchAll:GetPropertyChangedSignal("Text"):Connect(updatePlayers)
-resetBtn.MouseButton1Click:Connect(updatePlayers)
-resetAll.MouseButton1Click:Connect(updatePlayers)
-Players.PlayerAdded:Connect(updatePlayers)
-Players.PlayerRemoving:Connect(updatePlayers)
-updatePlayers()
-
-toggleBtn.MouseButton1Click:Connect(function()
-    if not selectedTarget then
-        targetLabel.Text = "Chưa chọn ai!"
-        return
-    end
-    slashing = not slashing
-    toggleBtn.Text = slashing and "ON Slash" or "OFF Slash"
-    if slashing then
-        task.spawn(function()
-            while slashing and selectedTarget do
-                doSlash(selectedTarget)
-                task.wait(0.1)
-            end
-        end)
-    end
-end)
-
-toggleAllBtn.MouseButton1Click:Connect(function()
-    slashingAll = not slashingAll
-    toggleAllBtn.Text = slashingAll and "ON Slash All" or "OFF Slash All"
-    if slashingAll then
-        task.spawn(function()
-            while slashingAll do
-                for _,p in ipairs(Players:GetPlayers()) do
-                    if p ~= LocalPlayer and not selectedAll[p] then
-                        doSlash(p)
-                    end
-                end
-                task.wait(0.1)
-            end
-        end)
+            local btnAll = Instance.new("TextButton", allList)
+            btnAll.Size = UDim2.new(1,-10,0,30)
+            btnAll.Text = p.Name
+            btnAll.BackgroundColor3 = Color3.fromRGB(70,70,70)
+            btnAll.TextColor3 = Color3.fromRGB(255,255,255)
+            selectedAll[p] = false
+            btnAll.MouseButton1Click:Connect(function()
+                selectedAll[p] = not selectedAll[p]
+                btnAll.BackgroundColor3 = selectedAll[p] and Color3.fromRGB(120,70,70) or Color3.fromRGB(70,70,70)
+            end)
         end
