@@ -1,161 +1,135 @@
--- Tạo GUI cơ bản
-local ScreenGui = Instance.new("ScreenGui")
-local MainFrame = Instance.new("Frame")
-local TitleLabel = Instance.new("TextLabel")
-local ToggleAutoRoll0Button = Instance.new("TextButton")
-local ToggleĐào Kim CươngButton = Instance.new("TextButton")
-local ToggleĐào ĐáButton = Instance.new("TextButton")
-local ToggleĐào VàngButton = Instance.new("TextButton")
-local ToggleButton = Instance.new("TextButton")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
--- Thuộc tính GUI
-ScreenGui.Parent = game:GetService("CoreGui")  -- Đảm bảo GUI hiển thị trên CoreGui (Roblox Studio)
+local gui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
 
-MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-MainFrame.Size = UDim2.new(0, 200, 0, 150)
-MainFrame.Position = UDim2.new(0, 50, 0, 50)
-MainFrame.Active = true
-MainFrame.Draggable = true -- Cho phép kéo thả menu
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 220, 0, 400)
+frame.Position = UDim2.new(0.3, 0, 0.3, 0)
+frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+frame.Active = true
+frame.Draggable = true
 
-TitleLabel.Parent = MainFrame
-TitleLabel.Text = "Pet Go Hub"
-TitleLabel.Size = UDim2.new(1, 0, 0, 30)
-TitleLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-TitleLabel.Font = Enum.Font.SourceSans
-TitleLabel.TextSize = 18
+local minimizeButton = Instance.new("TextButton", frame)
+minimizeButton.Size = UDim2.new(0, 30, 0, 30)
+minimizeButton.Position = UDim2.new(1, -35, 0, 5)
+minimizeButton.Text = "-"
 
-ToggleEggsRollButton.Parent = MainFrame
-ToggleEggsRollButton.Text = "Auto Roll 0: OFF"
-ToggleEggsRollButton.Size = UDim2.new(1, -20, 0, 30)
-ToggleEggsRollButton.Position = UDim2.new(0, 10, 0, 40)
-ToggleEggsRollButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-ToggleEggsRollButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleEggsRollButton.Font = Enum.Font.SourceSans
-ToggleEggsRollButton.TextSize = 16
+local targetLabel = Instance.new("TextLabel", frame)
+targetLabel.Size = UDim2.new(1, -10, 0, 30)
+targetLabel.Position = UDim2.new(0, 5, 0, 35)
+targetLabel.Text = "Chưa chọn ai"
+targetLabel.BackgroundTransparency = 1
+targetLabel.TextColor3 = Color3.fromRGB(255,255,255)
 
-ToggleAttack8Button.Parent = MainFrame
-ToggleAttack8Button.Text = "Đào Kim Cương 1: OFF"
-ToggleAttack8Button.Size = UDim2.new(1, -20, 0, 30)
-ToggleAttack8Button.Position = UDim2.new(0, 10, 0, 75)
-ToggleAttack8Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-ToggleAttack8Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleAttack8Button.Font = Enum.Font.SourceSans
-ToggleAttack8Button.TextSize = 16
+local searchBox = Instance.new("TextBox", frame)
+searchBox.Size = UDim2.new(1, -10, 0, 30)
+searchBox.Position = UDim2.new(0, 5, 0, 70)
+searchBox.PlaceholderText = "Tìm player..."
+searchBox.Text = ""
+searchBox.BackgroundColor3 = Color3.fromRGB(60,60,60)
+searchBox.TextColor3 = Color3.fromRGB(255,255,255)
 
-ToggleAttack2Button.Parent = MainFrame
-ToggleAttack2Button.Text = "Đào Đá 2: OFF"
-ToggleAttack2Button.Size = UDim2.new(1, -20, 0, 30)
-ToggleAttack2Button.Position = UDim2.new(0, 10, 0, 110)
-ToggleAttack2Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-ToggleAttack2Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleAttack2Button.Font = Enum.Font.SourceSans
-ToggleAttack2Button.TextSize = 16
+local resetButton = Instance.new("TextButton", frame)
+resetButton.Size = UDim2.new(1, -10, 0, 30)
+resetButton.Position = UDim2.new(0, 5, 0, 110)
+resetButton.Text = "Reset danh sách"
+resetButton.BackgroundColor3 = Color3.fromRGB(100, 60, 60)
+resetButton.TextColor3 = Color3.fromRGB(255,255,255)
 
-ToggleAttack1Button.Parent = MainFrame
-ToggleAttack1Button.Text = "Đào Vàng 3: OFF"
-ToggleAttack1Button.Size = UDim2.new(1, -20, 0, 30)
-ToggleAttack1Button.Position = UDim2.new(0, 10, 0, 145)
-ToggleAttack1Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-ToggleAttack1Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleAttack1Button.Font = Enum.Font.SourceSans
-ToggleAttack1Button.TextSize = 16
+local list = Instance.new("ScrollingFrame", frame)
+list.Size = UDim2.new(1, -10, 0, 180)
+list.Position = UDim2.new(0, 5, 0, 150)
+list.ScrollBarThickness = 6
+list.AutomaticCanvasSize = Enum.AutomaticSize.Y
+list.ClipsDescendants = true
 
-ToggleButton.Parent = MainFrame
-ToggleButton.Text = "▼"
-ToggleButton.Size = UDim2.new(0, 30, 0, 30)
-ToggleButton.Position = UDim2.new(1, -40, 0, 0)
-ToggleButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.Font = Enum.Font.SourceSans
-ToggleButton.TextSize = 18
+local layout = Instance.new("UIListLayout", list)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+layout.Padding = UDim.new(0,5)
 
--- Chức năng thu gọn/mở rộng menu
-local isCollapsed = false
-ToggleButton.MouseButton1Click:Connect(function()
-    isCollapsed = not isCollapsed
-    if isCollapsed then
-        MainFrame.Size = UDim2.new(0, 200, 0, 30)  -- Thu gọn chỉ còn tiêu đề
-        ToggleButton.Text = "▲"
-        -- Ẩn các chức năng
-        ToggleEggsRollButton.Visible = false
-        ToggleAttack8Button.Visible = false
-        ToggleAttack2Button.Visible = false
-        ToggleAttack1Button.Visible = false
-    else
-        MainFrame.Size = UDim2.new(0, 200, 0, 150)  -- Mở rộng để hiển thị tất cả chức năng
-        ToggleButton.Text = "▼"
-        -- Hiển thị lại các chức năng
-        ToggleEggsRollButton.Visible = true
-        ToggleAttack8Button.Visible = true
-        ToggleAttack2Button.Visible = true
-        ToggleAttack1Button.Visible = true
+local toggleButton = Instance.new("TextButton", frame)
+toggleButton.Size = UDim2.new(1, -10, 0, 40)
+toggleButton.Position = UDim2.new(0, 5, 1, -45)
+toggleButton.Text = "OFF Slash"
+toggleButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+toggleButton.TextColor3 = Color3.fromRGB(255,255,255)
+
+local selectedTarget = nil
+local slashing = false
+
+local function doSlash(target)
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("SlapHand") then
+        local args = {
+            "slash",
+            target.Character,
+            Vector3.new(0,0,0)
+        }
+        LocalPlayer.Character.SlapHand.Event:FireServer(unpack(args))
     end
-end)
+end
 
--- Các biến trạng thái
-local eggsRollActive = false
-local attack8Active = false
-local attack2Active = false
-local attack1Active = false
+local function updatePlayers()
+    list:ClearAllChildren()
 
--- Vòng lặp để thực thi các chức năng
-local function startLoop()
-    while task.wait() do
-        if eggsRollActive then
-            pcall(function()
-                game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Eggs_Roll"):InvokeServer()
-            end)
-            wait(1) -- Tạm dừng 1 giây
-        end
+    local noneBtn = Instance.new("TextButton", list)
+    noneBtn.Size = UDim2.new(1, -10, 0, 30)
+    noneBtn.Text = "None"
+    noneBtn.BackgroundColor3 = Color3.fromRGB(100,50,50)
+    noneBtn.TextColor3 = Color3.fromRGB(255,255,255)
+    noneBtn.MouseButton1Click:Connect(function()
+        selectedTarget = nil
+        targetLabel.Text = "Chưa chọn ai"
+    end)
 
-        if attack8Active then
-            local args = { [1] = 8 }
-            pcall(function()
-                game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Mining_Attack"):InvokeServer(unpack(args))
-            end)
-            wait(0.1) -- Tạm dừng ngắn
-        end
-
-        if attack2Active then
-            local args = { [1] = 2 }
-            pcall(function()
-                game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Mining_Attack"):InvokeServer(unpack(args))
-            end)
-            wait(2) -- Tạm dừng trước vòng lặp tiếp theo
-        end
-
-        if attack1Active then
-            local args = { [1] = 1 }
-            pcall(function()
-                game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Mining_Attack"):InvokeServer(unpack(args))
-            end)
-            wait(3) -- Tạm dừng trước vòng lặp tiếp theo
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer then
+            if searchBox.Text == "" or string.find(p.Name:lower(), searchBox.Text:lower()) then
+                local btn = Instance.new("TextButton", list)
+                btn.Size = UDim2.new(1, -10, 0, 30)
+                btn.Text = p.Name
+                btn.BackgroundColor3 = Color3.fromRGB(70,70,70)
+                btn.TextColor3 = Color3.fromRGB(255,255,255)
+                btn.MouseButton1Click:Connect(function()
+                    selectedTarget = p
+                    targetLabel.Text = "Đã chọn: " .. p.Name
+                end)
+            end
         end
     end
 end
 
--- Sự kiện cho các nút
-ToggleEggsRollButton.MouseButton1Click:Connect(function()
-    eggsRollActive = not eggsRollActive
-    ToggleEggsRollButton.Text = eggsRollActive and "Auto Roll 0: ON" or "Eggs Roll: OFF"
+searchBox:GetPropertyChangedSignal("Text"):Connect(updatePlayers)
+resetButton.MouseButton1Click:Connect(updatePlayers)
+Players.PlayerAdded:Connect(updatePlayers)
+Players.PlayerRemoving:Connect(updatePlayers)
+updatePlayers()
+
+toggleButton.MouseButton1Click:Connect(function()
+    if not selectedTarget then
+        targetLabel.Text = "Chưa chọn ai!"
+        return
+    end
+    slashing = not slashing
+    toggleButton.Text = slashing and "ON Slash" or "OFF Slash"
+    if slashing then
+        task.spawn(function()
+            while slashing and selectedTarget do
+                doSlash(selectedTarget)
+                task.wait(0.1)
+            end
+        end)
+    end
 end)
 
-ToggleAttack8Button.MouseButton1Click:Connect(function()
-    attack8Active = not attack8Active
-    ToggleAttack8Button.Text = attack8Active and "Đào Kim Cương 1: ON" or "Attack 8: OFF"
+local minimized = false
+minimizeButton.MouseButton1Click:Connect(function()
+    if minimized then
+        frame.Size = UDim2.new(0, 220, 0, 400)
+        minimizeButton.Text = "-"
+    else
+        frame.Size = UDim2.new(0, 60, 0, 60)
+        minimizeButton.Text = "+"
+    end
+    minimized = not minimized
 end)
-
-ToggleAttack2Button.MouseButton1Click:Connect(function()
-    attack2Active = not attack2Active
-    ToggleAttack2Button.Text = attack2Active and "Đào Đá 2: ON" or "Attack 2: OFF"
-end)
-
-ToggleAttack1Button.MouseButton1Click:Connect(function()
-    attack1Active = not attack1Active
-    ToggleAttack1Button.Text = attack1Active and "Đào Vàng 3: ON" or "Attack 1: OFF"
-end)
-
--- Bắt đầu vòng lặp
-spawn(startLoop)
