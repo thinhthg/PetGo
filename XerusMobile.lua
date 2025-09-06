@@ -31,7 +31,6 @@ circleBtn.MouseButton1Click:Connect(function()
     circleBtn.Visible = false
 end)
 
--- DANH SÁCH CÁ NHÂN
 local targetLabel = Instance.new("TextLabel", frame)
 targetLabel.Size = UDim2.new(1,-10,0,30)
 targetLabel.Position = UDim2.new(0,5,0,35)
@@ -87,7 +86,6 @@ Players.PlayerAdded:Connect(updateIndividualList)
 Players.PlayerRemoving:Connect(updateIndividualList)
 updateIndividualList()
 
--- SLASH CÁ NHÂN
 local slashBtn = Instance.new("TextButton", frame)
 slashBtn.Size = UDim2.new(1,-10,0,40)
 slashBtn.Position = UDim2.new(0,5,1,-45)
@@ -116,7 +114,6 @@ slashBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- DANH SÁCH ALL PLAYER
 local allSearchBox = Instance.new("TextBox", frame)
 allSearchBox.Size = UDim2.new(1,-10,0,30)
 allSearchBox.Position = UDim2.new(0,5,0,270)
@@ -170,7 +167,6 @@ Players.PlayerAdded:Connect(updateAllList)
 Players.PlayerRemoving:Connect(updateAllList)
 updateAllList()
 
--- SLASH ALL
 local slashAllBtn = Instance.new("TextButton", frame)
 slashAllBtn.Size = UDim2.new(1,-10,0,40)
 slashAllBtn.Position = UDim2.new(0,5,1,-90)
@@ -195,7 +191,3 @@ slashAllBtn.MouseButton1Click:Connect(function()
         end)
     end
 end)
-
--- Reset cá nhân
-local resetIndivBtn = Instance.new("TextButton", frame)
-resetIndivBtn.Size =
