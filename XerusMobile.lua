@@ -187,3 +187,65 @@ toggleBtn.MouseButton1Click:Connect(function()
         return
     end
     slashing = not slashing
+toggleBtn.Text = slashing and "ON Slash" or "OFF Slash"
+    if slashing then
+        task.spawn(function()
+            while slashing and selectedTarget do
+                doSlash(selectedTarget)
+                task.wait(0.1)
+            end
+        end)
+    end
+end)
+
+toggleAllBtn.MouseButton1Click:Connect(function()
+    slashingAll = not slashingAll
+    toggleAllBtn.Text = slashingAll and "ON Slash All" or "OFF Slash All"
+    if slashingAll then
+        task.spawn(function()
+            while slashingAll do
+                for _,p in ipairs(Players:GetPlayers()) do
+                    if p ~= LocalPlayer and not selectedAll[p] then
+                        doSlash(p)
+                    end
+                end
+                task.wait(0.1)
+            end
+        end)
+    end
+end)
+
+minimizeButton.MouseButton1Click:Connect(function()
+    f.Visible = false
+    circleBtn.Visible = true
+end)
+
+circleBtn.MouseButton1Click:Connect(function()
+    f.Visible = true
+    circleBtn.Visible = false
+end)
+
+indivHeader.MouseButton1Click:Connect(function()
+    indivCollapsed = not indivCollapsed
+    searchBox.Visible = not indivCollapsed
+    resetBtn.Visible = not indivCollapsed
+    indivList.Visible = not indivCollapsed
+    indivHeader.Text = (indivCollapsed and "+" or "-").." Cá nhân"
+    updateMenuHeight()
+end)
+
+allHeader.MouseButton1Click:Connect(function()
+    allCollapsed = not allCollapsed
+    searchAll.Visible = not allCollapsed
+    resetAll.Visible = not allCollapsed
+    allList.Visible = not allCollapsed
+    allHeader.Text = (allCollapsed and "+" or "-").." All Player"
+    updateMenuHeight()
+end)
+
+LocalPlayer.CharacterAdded:Connect(function()
+    slashing = false
+    slashingAll = false
+    toggleBtn.Text = "OFF Slash"
+    toggleAllBtn.Text = "OFF Slash All"
+end)
