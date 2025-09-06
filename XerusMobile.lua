@@ -1,6 +1,8 @@
 local P = game:GetService("Players")
 local L = P.LocalPlayer
 local PlayerGui = L:WaitForChild("PlayerGui")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
 local gui = Instance.new("ScreenGui")
 gui.Parent = PlayerGui
 gui.ResetOnSpawn = false
@@ -41,6 +43,7 @@ targetLabel.Text = "Chưa chọn ai"
 targetLabel.BackgroundTransparency = 1
 targetLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 
+-- Cá nhân
 local indivHeader = Instance.new("TextButton", f)
 indivHeader.Size = UDim2.new(1, -10, 0, 30)
 indivHeader.Position = UDim2.new(0, 5, 0, 70)
@@ -78,8 +81,9 @@ toggleBtn.Text = "OFF Slash"
 toggleBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 
+-- All
 local allHeader = Instance.new("TextButton", f)
-allHeader.Size = UDim2.new(1, -10, 0, 30)
+allHeader.Size = UDim2.new(1, -10, 0, 385)
 allHeader.Position = UDim2.new(0, 5, 0, 385)
 allHeader.Text = "- All Player"
 allHeader.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
@@ -150,32 +154,25 @@ local function updateAllList()
     allList:ClearAllChildren()
     for _, p in ipairs(P:GetPlayers()) do
         if p ~= L then
-            local btn = Instance.new("TextButton", allList)
-            btn.Size = UDim2.new(1, -10, 0, 30)
-            btn.Text = p.Name
-            btn.BackgroundColor3 = selectedAll[p] and Color3.fromRGB(100,100,100) or Color3.fromRGB(70,70,70)
-            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-            btn.MouseButton1Click:Connect(function()
-                if selectedAll[p] then
-                    selectedAll[p] = nil
-                    btn.BackgroundColor3 = Color3.fromRGB(70,70,70)
-                else
-                    selectedAll[p] = true
-                    btn.BackgroundColor3 = Color3.fromRGB(100,100,100)
-                end
-            end)
+            if searchAll.Text == "" or string.find(p.Name:lower(), searchAll.Text:lower()) then
+                local btn = Instance.new("TextButton", allList)
+                btn.Size = UDim2.new(1, -10, 0, 30)
+                btn.Text = p.Name
+                btn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+                btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+                btn.MouseButton1Click:Connect(function()
+                    selectedAll[p] = not selectedAll[p]
+                    btn.BackgroundColor3 = selectedAll[p] and Color3.fromRGB(120, 70, 70) or Color3.fromRGB(70, 70, 70)
+                end)
+            end
         end
     end
 end
 
 searchBox:GetPropertyChangedSignal("Text"):Connect(updateIndividualList)
-resetBtn.MouseButton1Click:Connect(updateIndividualList)
 searchAll:GetPropertyChangedSignal("Text"):Connect(updateAllList)
-resetAll.MouseButton1Click:Connect(function()
-    selectedAll = {}
-    updateAllList()
-end)
-
+resetBtn.MouseButton1Click:Connect(updateIndividualList)
+resetAll.MouseButton1Click:Connect(updateAllList)
 P.PlayerAdded:Connect(function()
     updateIndividualList()
     updateAllList()
@@ -184,18 +181,23 @@ P.PlayerRemoving:Connect(function()
     updateIndividualList()
     updateAllList()
 end)
-
 updateIndividualList()
 updateAllList()
 
 toggleBtn.MouseButton1Click:Connect(function()
+    if not selectedTarget and next(selectedAll) == nil then
+        targetLabel.Text = "Chưa chọn ai!"
+        return
+    end
     slashing = not slashing
     toggleBtn.Text = slashing and "ON Slash" or "OFF Slash"
     if slashing then
         task.spawn(function()
             while slashing do
                 if selectedTarget then doSlash(selectedTarget) end
-                for p,_ in pairs(selectedAll) do doSlash(p) end
+                for p,_ in pairs(selectedAll) do
+                    if selectedAll[p] then doSlash(p) end
+                end
                 task.wait(0.1)
             end
         end)
@@ -205,4 +207,25 @@ end)
 L.CharacterAdded:Connect(function()
     slashing = false
     toggleBtn.Text = "OFF Slash"
+end)
+
+
+local indivCollapsed = false
+indivHeader.MouseButton1Click:Connect(function()
+    indivCollapsed = not indivCollapsed
+    indivList.Visible = not indivCollapsed
+    searchBox.Visible = not indivCollapsed
+    resetBtn.Visible = not indivCollapsed
+    indivHeader.Text = indivCollapsed and "+ Cá nhân" or "- Cá nhân"
+    f.Size = UDim2.new(0,220,0, indivCollapsed and (allCollapsed and 120 or 540) or 700)
+end)
+
+local allCollapsed = false
+allHeader.MouseButton1Click:Connect(function()
+    allCollapsed = not allCollapsed
+    allList.Visible = not allCollapsed
+    searchAll.Visible = not allCollapsed
+    resetAll.Visible = not allCollapsed
+    allHeader.Text = allCollapsed and "+ All Player" or "- All Player"
+    f.Size = UDim2.new(0,220,0, allCollapsed and (indivCollapsed and 120 or 540) or 700)
 end)
