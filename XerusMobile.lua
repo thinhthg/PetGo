@@ -3,8 +3,7 @@ local L = P.LocalPlayer
 local PlayerGui = L:WaitForChild("PlayerGui")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local gui = Instance.new("ScreenGui")
-gui.Parent = PlayerGui
+local gui = Instance.new("ScreenGui", PlayerGui)
 gui.ResetOnSpawn = false
 
 local f = Instance.new("Frame", gui)
@@ -43,7 +42,6 @@ targetLabel.Text = "Chưa chọn ai"
 targetLabel.BackgroundTransparency = 1
 targetLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 
--- Cá nhân
 local indivHeader = Instance.new("TextButton", f)
 indivHeader.Size = UDim2.new(1, -10, 0, 30)
 indivHeader.Position = UDim2.new(0, 5, 0, 70)
@@ -81,9 +79,8 @@ toggleBtn.Text = "OFF Slash"
 toggleBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 
--- All
 local allHeader = Instance.new("TextButton", f)
-allHeader.Size = UDim2.new(1, -10, 0, 385)
+allHeader.Size = UDim2.new(1, -10, 0, 30)
 allHeader.Position = UDim2.new(0, 5, 0, 385)
 allHeader.Text = "- All Player"
 allHeader.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
@@ -115,6 +112,8 @@ allLayout.Padding = UDim.new(0, 5)
 local selectedTarget = nil
 local selectedAll = {}
 local slashing = false
+local indivCollapsed = false
+local allCollapsed = false
 
 local function doSlash(target)
     if L.Character and L.Character:FindFirstChild("SlapHand") and target.Character then
@@ -169,6 +168,14 @@ local function updateAllList()
     end
 end
 
+local function updateMenuHeight()
+    local baseHeight = 70
+    local toggleHeight = toggleBtn.Size.Y.Offset + 10
+    local indivHeight = (indivCollapsed and 0 or (searchBox.Size.Y.Offset + resetBtn.Size.Y.Offset + indivList.Size.Y.Offset + 10))
+    local allHeight = (allCollapsed and 0 or (searchAll.Size.Y.Offset + resetAll.Size.Y.Offset + allList.Size.Y.Offset + 10))
+    f.Size = UDim2.new(0, 220, 0, baseHeight + indivHeight + allHeight + toggleHeight)
+end
+
 searchBox:GetPropertyChangedSignal("Text"):Connect(updateIndividualList)
 searchAll:GetPropertyChangedSignal("Text"):Connect(updateAllList)
 resetBtn.MouseButton1Click:Connect(updateIndividualList)
@@ -183,6 +190,7 @@ P.PlayerRemoving:Connect(function()
 end)
 updateIndividualList()
 updateAllList()
+updateMenuHeight()
 
 toggleBtn.MouseButton1Click:Connect(function()
     if not selectedTarget and next(selectedAll) == nil then
@@ -209,23 +217,20 @@ L.CharacterAdded:Connect(function()
     toggleBtn.Text = "OFF Slash"
 end)
 
-
-local indivCollapsed = false
 indivHeader.MouseButton1Click:Connect(function()
     indivCollapsed = not indivCollapsed
     indivList.Visible = not indivCollapsed
     searchBox.Visible = not indivCollapsed
     resetBtn.Visible = not indivCollapsed
     indivHeader.Text = indivCollapsed and "+ Cá nhân" or "- Cá nhân"
-    f.Size = UDim2.new(0,220,0, indivCollapsed and (allCollapsed and 120 or 540) or 700)
+    updateMenuHeight()
 end)
 
-local allCollapsed = false
 allHeader.MouseButton1Click:Connect(function()
     allCollapsed = not allCollapsed
     allList.Visible = not allCollapsed
     searchAll.Visible = not allCollapsed
     resetAll.Visible = not allCollapsed
     allHeader.Text = allCollapsed and "+ All Player" or "- All Player"
-    f.Size = UDim2.new(0,220,0, allCollapsed and (indivCollapsed and 120 or 540) or 700)
+    updateMenuHeight()
 end)
